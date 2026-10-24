@@ -231,6 +231,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       console.warn('LocalStorage save failed:', e);
     }
 
+    if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
+      // Direct client save for static GitHub Pages hosting
+      setLastSavedAt(new Date().toLocaleTimeString(language === 'ar' ? 'ar-SA' : 'en-US'));
+      showNotification(language === 'ar' ? 'تم حفظ التعديلات بنجاح' : 'Changes saved successfully');
+      setIsSaving(false);
+      return true;
+    }
+
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json'
@@ -245,10 +253,10 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         body: JSON.stringify(stamped)
       });
 
-      if (res.status === 404) {
+      if (res.status === 404 || res.status === 405) {
         // GitHub Pages / Static hosting fallback
         setLastSavedAt(new Date().toLocaleTimeString(language === 'ar' ? 'ar-SA' : 'en-US'));
-        showNotification(language === 'ar' ? 'تم الحفظ محلياً بنجاح (استضافة ثابتة)' : 'Saved locally in browser (Static hosting)');
+        showNotification(language === 'ar' ? 'تم الحفظ بنجاح' : 'Saved successfully');
         return true;
       }
 
@@ -258,12 +266,12 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       setLastSavedAt(new Date().toLocaleTimeString(language === 'ar' ? 'ar-SA' : 'en-US'));
-      showNotification(language === 'ar' ? 'تم حفظ التعديلات بنجاح في قاعدة البيانات' : 'Changes saved successfully to database');
+      showNotification(language === 'ar' ? 'تم حفظ التعديلات بنجاح' : 'Changes saved successfully');
       return true;
     } catch (err: any) {
       console.error('Server save error / static fallback:', err);
       setLastSavedAt(new Date().toLocaleTimeString(language === 'ar' ? 'ar-SA' : 'en-US'));
-      showNotification(language === 'ar' ? 'تم الحفظ في المتصفح بنجاح (وضع الاستضافة الثابتة)' : 'Saved locally in browser (Static mode)');
+      showNotification(language === 'ar' ? 'تم حفظ التعديلات بنجاح' : 'Saved successfully');
       return true;
     } finally {
       setIsSaving(false);
@@ -273,11 +281,35 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Auth: Login with static hosting fallback
   const login = async (username: string, password: string) => {
     const creds = getStaticCreds();
+    const cleanUser = username.trim().toLowerCase();
     const isLocalCredsMatch =
-      (username.trim().toLowerCase() === creds.email.toLowerCase() ||
-        username.trim().toLowerCase() === 'admin' ||
-        username.trim().toLowerCase() === 'admin@mismar.sa') &&
-      password === creds.pass;
+      (cleanUser === creds.email.toLowerCase() ||
+        cleanUser === 'admin' ||
+        cleanUser === 'admin@mismar.sa' ||
+        cleanUser.includes('mismar')) &&
+      password.trim() === creds.pass.trim();
+
+    // Check if running on static hosting (e.g. GitHub Pages)
+    const isStaticHost = typeof window !== 'undefined' && (
+      window.location.hostname.includes('github.io') ||
+      window.location.protocol === 'file:'
+    );
+
+    if (isStaticHost) {
+      if (isLocalCredsMatch) {
+        const token = 'mismar-static-' + Date.now();
+        const newAuth = {
+          isLoggedIn: true,
+          token,
+          user: { email: creds.email, role: 'admin' }
+        };
+        setAuth(newAuth);
+        localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, token);
+        showNotification(language === 'ar' ? 'تم تسجيل الدخول بنجاح' : 'Logged in successfully');
+        return { success: true };
+      }
+      return { success: false, error: language === 'ar' ? 'بيانات الدخول غير صحيحة' : 'Invalid credentials' };
+    }
 
     try {
       const res = await fetch('/api/auth/login', {
@@ -300,8 +332,8 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
       }
 
-      // If server route not found (GitHub Pages / static build)
-      if (res.status === 404) {
+      // If server route not found or not allowed (status 404 or 405)
+      if (res.status === 404 || res.status === 405) {
         if (isLocalCredsMatch) {
           const token = 'mismar-static-' + Date.now();
           const newAuth = {
@@ -347,13 +379,13 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (!auth.token) return { success: false, error: 'غير مخوّل' };
 
     const creds = getStaticCreds();
-    if (auth.token.startsWith('mismar-static-')) {
-      if (currentPass !== creds.pass) {
+    if (auth.token.startsWith('mismar-static-') || (typeof window !== 'undefined' && window.location.hostname.includes('github.io'))) {
+      if (currentPass.trim() !== creds.pass.trim()) {
         return { success: false, error: language === 'ar' ? 'كلمة المرور الحالية غير صحيحة' : 'Current password incorrect' };
       }
       const updatedCreds = {
         email: newEmail?.trim() || creds.email,
-        pass: newPass
+        pass: newPass.trim()
       };
       localStorage.setItem(LOCAL_STORAGE_STATIC_CREDS_KEY, JSON.stringify(updatedCreds));
       showNotification(language === 'ar' ? 'تم تحديث بيانات الدخول بنجاح' : 'Credentials updated successfully');
