@@ -19,24 +19,10 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sync with current admin credentials whenever modal opens
+  // Keep fields clean and empty whenever the modal opens (no auto-fill or suggestions)
   React.useEffect(() => {
     if (isOpen) {
-      try {
-        const raw = localStorage.getItem('mismar_static_admin_creds');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && typeof parsed.email === 'string' && parsed.email.trim().length > 0) {
-            setUsername(parsed.email.trim());
-          } else {
-            setUsername('admin@mismar.sa');
-          }
-        } else {
-          setUsername('admin@mismar.sa');
-        }
-      } catch (e) {
-        setUsername('admin@mismar.sa');
-      }
+      setUsername('');
       setPassword('');
       setError(null);
     }
@@ -102,7 +88,10 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin@mismar.sa"
+                placeholder="أدخل اسم المستخدم أو البريد"
+                autoComplete="off"
+                autoCapitalize="none"
+                spellCheck={false}
                 className="w-full bg-neutral-950 border border-neutral-700 focus:border-amber-500 rounded-xl pr-9 pl-4 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none transition-colors"
               />
             </div>
@@ -119,7 +108,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="أدخل كلمة المرور"
+                autoComplete="current-password"
                 className="w-full bg-neutral-950 border border-neutral-700 focus:border-amber-500 rounded-xl pr-9 pl-4 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none transition-colors"
               />
             </div>
