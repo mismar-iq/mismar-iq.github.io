@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, ShieldAlert, KeyRound, Check } from 'lucide-react';
+import { X, Lock, Mail, ShieldAlert, KeyRound } from 'lucide-react';
 import { useContent } from '../../context/ContentContext';
 
 interface AdminLoginModalProps {
@@ -37,28 +37,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const quickLogin = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const result = await login('admin@mismar.sa', 'mismar2026');
-      if (result.success) {
-        onSuccess();
-        onClose();
-      } else {
-        setError(result.error || 'فشل تسجيل الدخول التلقائي');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fillQuickDemo = () => {
-    setUsername('admin@mismar.sa');
-    setPassword('mismar2026');
-    setError(null);
   };
 
   return (
@@ -132,25 +110,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
             <span>{isLoading ? 'جاري التحقق...' : 'دخول لوحة التحكم'}</span>
           </button>
         </form>
-
-        {/* Demo Quick Fill helper */}
-        <div className="mt-6 pt-4 border-t border-neutral-800 space-y-2.5 text-center">
-          <p className="text-[11px] text-neutral-400">
-            للتجربة السريعة والتحقق من ربط لوحة التحكم بالموقع:
-          </p>
-          <button
-            type="button"
-            onClick={quickLogin}
-            disabled={isLoading}
-            className="w-full py-2.5 bg-[#213039] hover:bg-[#2d3e4b] text-[#b88a58] border border-[#b88a58]/40 hover:border-[#b88a58] text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg"
-          >
-            <Check className="w-4 h-4 text-[#b88a58]" />
-            <span>⚡ دخول تجريبي فوري بضغطة زر واحدة</span>
-          </button>
-          <p className="text-[10px] text-neutral-500 font-mono">
-            الحساب: admin@mismar.sa | كلمة المرور: mismar2026
-          </p>
-        </div>
       </div>
     </div>
   );
