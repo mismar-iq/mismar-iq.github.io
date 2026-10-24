@@ -1,0 +1,6 @@
+{
+  "name": "MISMAR CONTRACTING | شركة مسمار للمقاولات",
+  "description": "الموقع الرسمي ولوحة التحكم لشركة مسمار للمقاولات - تنفيذ المشاريع السكنية والتجارية، باقات البناء، وإدارة المحتوى الكاملة.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
