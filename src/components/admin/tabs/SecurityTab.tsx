@@ -11,12 +11,23 @@ export const SecurityTab: React.FC = () => {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  React.useEffect(() => {
+    if (auth.user?.email) {
+      setNewEmail(auth.user.email);
+    }
+  }, [auth.user?.email]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
 
+    if (!currentPassword) {
+      setMessage({ text: 'يرجى كتابة كلمة المرور الحالية لتأكيد التغيير', type: 'error' });
+      return;
+    }
+
     if (newPassword && newPassword !== confirmPassword) {
-      setMessage({ text: 'كلمة المرور الجديدة غير متطابقة', type: 'error' });
+      setMessage({ text: 'كلمة المرور الجديدة وتأكيدها غير متطابقين', type: 'error' });
       return;
     }
 
@@ -29,7 +40,10 @@ export const SecurityTab: React.FC = () => {
     try {
       const res = await changePassword(currentPassword, newPassword, newEmail);
       if (res.success) {
-        setMessage({ text: 'تم تحديث بيانات الدخول بنجاح!', type: 'success' });
+        setMessage({
+          text: `تم حفظ البيانات الجديدة بنجاح! تم اعتماد البريد (${newEmail.trim()})${newPassword ? ' وكلمة المرور الجديدة' : ''}.`,
+          type: 'success'
+        });
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
@@ -54,6 +68,17 @@ export const SecurityTab: React.FC = () => {
               تغيير كلمة المرور والبريد الإداري لحماية لوحة تحكم موقع مسمار للمقاولات.
             </p>
           </div>
+        </div>
+
+        {/* Current Active Account Indicator */}
+        <div className="p-3.5 bg-neutral-950 border border-neutral-800/80 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs">
+          <span className="text-neutral-400 flex items-center gap-2">
+            <Mail className="w-4 h-4 text-amber-500" />
+            <span>البريد المعتمد حالياً للدخول:</span>
+          </span>
+          <span className="text-amber-400 font-mono font-bold bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20">
+            {auth.user?.email || 'admin@mismar.sa'}
+          </span>
         </div>
 
         {message && (

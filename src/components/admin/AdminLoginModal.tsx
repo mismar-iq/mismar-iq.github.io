@@ -14,10 +14,33 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   onSuccess
 }) => {
   const { login } = useContent();
-  const [username, setUsername] = useState('admin@mismar.sa');
-  const [password, setPassword] = useState('mismar2026');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Sync with current admin credentials whenever modal opens
+  React.useEffect(() => {
+    if (isOpen) {
+      try {
+        const raw = localStorage.getItem('mismar_static_admin_creds');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed.email === 'string' && parsed.email.trim().length > 0) {
+            setUsername(parsed.email.trim());
+          } else {
+            setUsername('admin@mismar.sa');
+          }
+        } else {
+          setUsername('admin@mismar.sa');
+        }
+      } catch (e) {
+        setUsername('admin@mismar.sa');
+      }
+      setPassword('');
+      setError(null);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
