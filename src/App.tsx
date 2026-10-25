@@ -6,7 +6,6 @@ import { MethodologySection } from './components/public/MethodologySection';
 import { ServicesSection } from './components/public/ServicesSection';
 import { PackagesSection } from './components/public/PackagesSection';
 import { ProjectsSection } from './components/public/ProjectsSection';
-import { EngineeringMaterials } from './components/public/EngineeringMaterials';
 import { AboutSection } from './components/public/AboutSection';
 import { CustomSectionsView } from './components/public/CustomSectionsView';
 import { QuoteSection } from './components/public/QuoteSection';
@@ -52,9 +51,6 @@ function MainWebsite() {
 
         {/* 04 - Executed Projects Portfolio */}
         <ProjectsSection />
-
-        {/* 04.5 - Engineering Materials Specifications */}
-        <EngineeringMaterials />
 
         {/* 05 - About Us Section */}
         <AboutSection />
