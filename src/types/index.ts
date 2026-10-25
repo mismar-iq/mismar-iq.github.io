@@ -73,6 +73,7 @@ export interface AboutData {
   title: BilingualText;
   subtitle: BilingualText;
   leadParagraph: BilingualText;
+  valuesTitle?: BilingualText;
   paragraphs: AboutParagraph[];
   vision: BilingualText;
   mission: BilingualText;

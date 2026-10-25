@@ -96,6 +96,19 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         return {
           ...defaultSiteContent,
           ...parsed,
+          about: {
+            ...defaultSiteContent.about,
+            ...(parsed.about || {}),
+            values: (parsed.about && parsed.about.values && parsed.about.values.length > 0)
+              ? parsed.about.values
+              : defaultSiteContent.about.values,
+            valuesTitle: (parsed.about && parsed.about.valuesTitle)
+              ? parsed.about.valuesTitle
+              : defaultSiteContent.about.valuesTitle,
+            stats: (parsed.about && parsed.about.stats && parsed.about.stats.length > 0)
+              ? parsed.about.stats
+              : defaultSiteContent.about.stats
+          },
           methodology: parsed.methodology || defaultSiteContent.methodology
         };
       }
@@ -162,6 +175,19 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
           const mergedData = {
             ...defaultSiteContent,
             ...data,
+            about: {
+              ...defaultSiteContent.about,
+              ...(data.about || {}),
+              values: (data.about && data.about.values && data.about.values.length > 0)
+                ? data.about.values
+                : defaultSiteContent.about.values,
+              valuesTitle: (data.about && data.about.valuesTitle)
+                ? data.about.valuesTitle
+                : defaultSiteContent.about.valuesTitle,
+              stats: (data.about && data.about.stats && data.about.stats.length > 0)
+                ? data.about.stats
+                : defaultSiteContent.about.stats
+            },
             methodology: data.methodology || defaultSiteContent.methodology
           };
           setContent(mergedData);

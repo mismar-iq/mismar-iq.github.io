@@ -1,16 +1,41 @@
 import React from 'react';
-import { ShieldCheck, Clock, FileCheck, Award, Eye, Compass } from 'lucide-react';
+import {
+  ShieldCheck,
+  Clock,
+  FileCheck,
+  Award,
+  Eye,
+  Compass,
+  CheckCircle2,
+  Scale,
+  Sparkles,
+  HeartHandshake,
+  Building2,
+  HardHat,
+  Users
+} from 'lucide-react';
 import { useContent } from '../../context/ContentContext';
 
 export const AboutSection: React.FC = () => {
   const { content, language, t } = useContent();
   const { about } = content;
 
-  const valueIcons: Record<string, React.ReactNode> = {
-    ShieldCheck: <ShieldCheck className="w-5 h-5 text-[#b88a58]" />,
-    Clock: <Clock className="w-5 h-5 text-[#b88a58]" />,
-    FileCheck: <FileCheck className="w-5 h-5 text-[#b88a58]" />,
-    Award: <Award className="w-5 h-5 text-[#b88a58]" />
+  const renderIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'ShieldCheck': return <ShieldCheck className="w-5 h-5 text-[#b88a58]" />;
+      case 'Clock': return <Clock className="w-5 h-5 text-[#b88a58]" />;
+      case 'FileCheck': return <FileCheck className="w-5 h-5 text-[#b88a58]" />;
+      case 'Award': return <Award className="w-5 h-5 text-[#b88a58]" />;
+      case 'CheckCircle2': return <CheckCircle2 className="w-5 h-5 text-[#b88a58]" />;
+      case 'Scale': return <Scale className="w-5 h-5 text-[#b88a58]" />;
+      case 'Sparkles': return <Sparkles className="w-5 h-5 text-[#b88a58]" />;
+      case 'HeartHandshake': return <HeartHandshake className="w-5 h-5 text-[#b88a58]" />;
+      case 'Building2': return <Building2 className="w-5 h-5 text-[#b88a58]" />;
+      case 'HardHat': return <HardHat className="w-5 h-5 text-[#b88a58]" />;
+      case 'Users': return <Users className="w-5 h-5 text-[#b88a58]" />;
+      case 'Compass': return <Compass className="w-5 h-5 text-[#b88a58]" />;
+      default: return <ShieldCheck className="w-5 h-5 text-[#b88a58]" />;
+    }
   };
 
   return (
@@ -92,7 +117,7 @@ export const AboutSection: React.FC = () => {
         {about.values && about.values.length > 0 && (
           <div>
             <div className="text-xs font-mono text-[#8898a3] uppercase tracking-widest mb-6">
-              {language === 'ar' ? 'قيمنا الجوهرية' : 'Core Principles'}
+              {about.valuesTitle ? t(about.valuesTitle) : (language === 'ar' ? 'قيمنا الجوهرية' : 'Core Principles')}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {about.values.map((val) => (
@@ -101,7 +126,7 @@ export const AboutSection: React.FC = () => {
                   className="p-6 bg-white border border-[#ded5c7] hover:border-[#b88a58]/60 transition-colors"
                 >
                   <div className="w-10 h-10 border border-[#ded5c7] flex items-center justify-center mb-4">
-                    {valueIcons[val.icon] || <ShieldCheck className="w-5 h-5 text-[#b88a58]" />}
+                    {renderIcon(val.icon)}
                   </div>
                   <h4 className="text-sm font-bold text-[#1e2b34] mb-2">{t(val.title)}</h4>
                   <p className="text-xs text-[#556570] font-light leading-relaxed">{t(val.description)}</p>

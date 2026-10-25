@@ -71,6 +71,10 @@ export const defaultSiteContent: SiteContent = {
       ar: 'تأسست شركة مسمار للمقاولات لتكون شريكاً هندسياً موثوقاً في تشييد وتطوير المشاريع السكنية والتجارية في العراق، حيث نجمع بين متانة الهيكل الإنشائي وجمال وفخامة التفاصيل المعمارية العصرية.',
       en: 'Founded to deliver structural mastery across Iraq\'s residential and commercial landscape, combining engineered strength with bespoke architectural finishing.'
     },
+    valuesTitle: {
+      ar: 'قيمنا الجوهرية',
+      en: 'Core Principles'
+    },
     paragraphs: [
       {
         id: 'ab-p1',
