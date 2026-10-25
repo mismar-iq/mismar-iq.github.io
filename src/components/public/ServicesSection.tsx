@@ -21,24 +21,41 @@ export const ServicesSection: React.FC = () => {
     Palmtree: <Palmtree className="w-5 h-5 text-[#b88a58]" />
   };
 
+  const kicker = t(
+    content.servicesHeader?.kicker,
+    language === 'ar' ? '02 — خدماتنا' : '02 — Our Services'
+  );
+  const heading = t(
+    content.servicesHeader?.heading,
+    language === 'ar' ? 'حلول متكاملة تغطي كافة مراحل البناء' : 'End-to-End Contracting Across Every Milestone'
+  );
+  const description = t(
+    content.servicesHeader?.description,
+    language === 'ar'
+      ? 'من الصبة الأولى حتى أرقى التشطيبات، نحرص على معايير دقيقة تجعل المبنى استثماراً يمتد لعقود.'
+      : 'From foundation to luxury architectural handover, engineered to endure for generations.'
+  );
+
   return (
     <section id="services" className="py-24 sm:py-32 bg-[#18232b] text-white border-b border-[#2d3e4b]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="max-w-3xl mb-18">
-          <div className="text-xs font-mono text-[#b88a58] tracking-widest uppercase mb-3">
-            02 — {language === 'ar' ? 'خدماتنا' : 'Our Services'}
-          </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
-            {language === 'ar'
-              ? 'حلول متكاملة تغطي كافة مراحل البناء'
-              : 'End-to-End Contracting Across Every Milestone'}
-          </h2>
-          <p className="mt-4 text-sm sm:text-base text-neutral-300 font-light leading-relaxed">
-            {language === 'ar'
-              ? 'من الصبة الأولى حتى أرقى التشطيبات، نحرص على معايير دقيقة تجعل المبنى استثماراً يمتد لعقود.'
-              : 'From foundation to luxury architectural handover, engineered to endure for generations.'}
-          </p>
+          {kicker && (
+            <div className="text-xs font-mono text-[#b88a58] tracking-widest uppercase mb-3">
+              {kicker}
+            </div>
+          )}
+          {heading && (
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
+              {heading}
+            </h2>
+          )}
+          {description && (
+            <p className="mt-4 text-sm sm:text-base text-neutral-300 font-light leading-relaxed">
+              {description}
+            </p>
+          )}
         </div>
 
         {/* Services Grid matching Mismar editorial architecture */}

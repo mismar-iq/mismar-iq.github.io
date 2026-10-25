@@ -17,17 +17,82 @@ import {
   Paintbrush,
   HardHat,
   Hammer,
-  Palmtree
+  Palmtree,
+  FileText,
+  ChevronDown,
+  ChevronUp,
+  CheckCircle2
 } from 'lucide-react';
 import { ConfirmModal } from '../../common/ConfirmModal';
 
 export const ServicesManagerTab: React.FC = () => {
-  const { content, saveService, deleteService } = useContent();
+  const { content, saveContent, saveService, deleteService } = useContent();
   const services = [...(content.services || [])].sort((a, b) => a.order - b.order);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingService, setEditingService] = useState<ServiceItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Section Header State
+  const defaultServicesHeader = {
+    kicker: { ar: '02 — خدماتنا', en: '02 — Our Services' },
+    heading: { ar: 'حلول متكاملة تغطي كافة مراحل البناء', en: 'End-to-End Contracting Across Every Milestone' },
+    description: {
+      ar: 'من الصبة الأولى حتى أرقى التشطيبات، نحرص على معايير دقيقة تجعل المبنى استثماراً يمتد لعقود.',
+      en: 'From foundation to luxury architectural handover, engineered to endure for generations.'
+    }
+  };
+
+  const [headerState, setHeaderState] = useState(() => ({
+    kicker: {
+      ar: content.servicesHeader?.kicker?.ar || defaultServicesHeader.kicker.ar,
+      en: content.servicesHeader?.kicker?.en || defaultServicesHeader.kicker.en
+    },
+    heading: {
+      ar: content.servicesHeader?.heading?.ar || defaultServicesHeader.heading.ar,
+      en: content.servicesHeader?.heading?.en || defaultServicesHeader.heading.en
+    },
+    description: {
+      ar: content.servicesHeader?.description?.ar || defaultServicesHeader.description.ar,
+      en: content.servicesHeader?.description?.en || defaultServicesHeader.description.en
+    }
+  }));
+
+  const [isHeaderSaving, setIsHeaderSaving] = useState(false);
+  const [headerSaveSuccess, setHeaderSaveSuccess] = useState(false);
+  const [isHeaderOpen, setIsHeaderOpen] = useState(true);
+
+  // Sync when content updates
+  React.useEffect(() => {
+    if (content.servicesHeader) {
+      setHeaderState({
+        kicker: {
+          ar: content.servicesHeader.kicker?.ar || defaultServicesHeader.kicker.ar,
+          en: content.servicesHeader.kicker?.en || defaultServicesHeader.kicker.en
+        },
+        heading: {
+          ar: content.servicesHeader.heading?.ar || defaultServicesHeader.heading.ar,
+          en: content.servicesHeader.heading?.en || defaultServicesHeader.heading.en
+        },
+        description: {
+          ar: content.servicesHeader.description?.ar || defaultServicesHeader.description.ar,
+          en: content.servicesHeader.description?.en || defaultServicesHeader.description.en
+        }
+      });
+    }
+  }, [content.servicesHeader]);
+
+  const handleSaveHeader = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsHeaderSaving(true);
+    await saveContent({
+      ...content,
+      servicesHeader: headerState
+    });
+    setIsHeaderSaving(false);
+    setHeaderSaveSuccess(true);
+    setTimeout(() => setHeaderSaveSuccess(false), 3000);
+  };
 
   const availableIcons = [
     { name: 'Building2', label: 'مبنى / مقاولات عامة' },
@@ -104,7 +169,7 @@ export const ServicesManagerTab: React.FC = () => {
         <div>
           <h2 className="text-lg font-bold text-white">إدارة الخدمات الهندسية والإنشائية</h2>
           <p className="text-xs text-neutral-400">
-            إضافة وتعديل الخدمات المتخصصة للشركة وتحديد الأيقونات وحالة النشر.
+            تعديل عنوان ومقدمة قسم الخدمات وإدارة كروت الخدمات وحالة النشر.
           </p>
         </div>
 
@@ -116,6 +181,110 @@ export const ServicesManagerTab: React.FC = () => {
             <Plus className="w-4 h-4" />
             <span>إضافة خدمة جديدة</span>
           </button>
+        )}
+      </div>
+
+      {/* Section Header Editor (Title, Subtitle & Kicker) */}
+      <div className="p-5 sm:p-6 rounded-2xl border border-neutral-800 bg-neutral-900/80 shadow-lg space-y-4">
+        <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
+              <FileText className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <span>عنوان ومقدمة قسم الخدمات (المعروضة أعلى القسم)</span>
+                {headerSaveSuccess && (
+                  <span className="text-[11px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>تم الحفظ</span>
+                  </span>
+                )}
+              </h3>
+              <p className="text-[11px] text-neutral-400">
+                يمكنك هنا تغيير العنوان الرئيسي والوصف الظاهرين في واجهة الموقع.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsHeaderOpen(!isHeaderOpen)}
+            className="p-1.5 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 transition-colors"
+          >
+            {isHeaderOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+        </div>
+
+        {isHeaderOpen && (
+          <form onSubmit={handleSaveHeader} className="space-y-4 pt-1">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  شارة القسم (Kicker) بالعربية
+                </label>
+                <input
+                  type="text"
+                  value={headerState.kicker.ar}
+                  onChange={(e) =>
+                    setHeaderState({
+                      ...headerState,
+                      kicker: { ...headerState.kicker, ar: e.target.value }
+                    })
+                  }
+                  placeholder="02 — خدماتنا"
+                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-mono"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  العنوان الرئيسي للقسم (Heading) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={headerState.heading.ar}
+                  onChange={(e) =>
+                    setHeaderState({
+                      ...headerState,
+                      heading: { ...headerState.heading, ar: e.target.value }
+                    })
+                  }
+                  placeholder="حلول متكاملة تغطي كافة مراحل البناء"
+                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-bold"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                الوصف والمقدمة التوضيحية أسفل العنوان
+              </label>
+              <textarea
+                rows={2}
+                value={headerState.description.ar}
+                onChange={(e) =>
+                  setHeaderState({
+                    ...headerState,
+                    description: { ...headerState.description, ar: e.target.value }
+                  })
+                }
+                placeholder="من الصبة الأولى حتى أرقى التشطيبات، نحرص على معايير دقيقة تجعل المبنى استثماراً يمتد لعقود."
+                className="w-full bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+              />
+            </div>
+
+            <div className="flex items-center justify-end pt-1">
+              <button
+                type="submit"
+                disabled={isHeaderSaving}
+                className="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>{isHeaderSaving ? 'جاري الحفظ...' : 'حفظ عنوان ومقدمة القسم'}</span>
+              </button>
+            </div>
+          </form>
         )}
       </div>
 

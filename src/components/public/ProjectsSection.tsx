@@ -27,20 +27,31 @@ export const ProjectsSection: React.FC = () => {
     ? projects
     : projects.filter((p) => p.category === selectedCategory);
 
+  const kicker = t(
+    content.projectsHeader?.kicker,
+    language === 'ar' ? '04 — مشاريعنا' : '04 — Our Portfolio'
+  );
+  const heading = t(
+    content.projectsHeader?.heading,
+    language === 'ar' ? 'مشاريع منفذة تشهد على دقة الإنجاز' : 'Architectural Landmarks Built to Endure'
+  );
+
   return (
     <section id="projects" className="py-24 sm:py-32 bg-[#18232b] text-white border-b border-[#2d3e4b]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div className="max-w-2xl">
-            <div className="text-xs font-mono text-[#b88a58] tracking-widest uppercase mb-3">
-              04 — {language === 'ar' ? 'مشاريعنا' : 'Our Portfolio'}
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
-              {language === 'ar'
-                ? 'مشاريع منفذة تشهد على دقة الإنجاز'
-                : 'Architectural Landmarks Built to Endure'}
-            </h2>
+            {kicker && (
+              <div className="text-xs font-mono text-[#b88a58] tracking-widest uppercase mb-3">
+                {kicker}
+              </div>
+            )}
+            {heading && (
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
+                {heading}
+              </h2>
+            )}
           </div>
 
           {/* Minimalist Filter Tabs */}

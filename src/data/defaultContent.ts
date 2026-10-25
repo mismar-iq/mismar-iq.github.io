@@ -208,6 +208,21 @@ export const defaultSiteContent: SiteContent = {
     ]
   },
 
+  packagesHeader: {
+    kicker: {
+      ar: '03 — باقات البناء',
+      en: '03 — Construction Packages'
+    },
+    heading: {
+      ar: 'باقات بناء مصممة لتلائم تطلعاتك بدقة',
+      en: 'Engineered Tiers Tailored to Your Ambitions'
+    },
+    description: {
+      ar: 'تتيح لك شركة مسمار اختيار الباقة المثالية لمنزلك أو مشروعك، مع إشراف هندسي وضمانات موثقة.',
+      en: 'Choose the ideal tier for your villa with certified engineering supervision and transparent BOQs.'
+    }
+  },
+
   packages: [
     {
       id: 'pkg-good',
@@ -312,6 +327,21 @@ export const defaultSiteContent: SiteContent = {
     }
   ],
 
+  servicesHeader: {
+    kicker: {
+      ar: '02 — خدماتنا',
+      en: '02 — Our Services'
+    },
+    heading: {
+      ar: 'حلول متكاملة تغطي كافة مراحل البناء',
+      en: 'End-to-End Contracting Across Every Milestone'
+    },
+    description: {
+      ar: 'من الصبة الأولى حتى أرقى التشطيبات، نحرص على معايير دقيقة تجعل المبنى استثماراً يمتد لعقود.',
+      en: 'From foundation to luxury architectural handover, engineered to endure for generations.'
+    }
+  },
+
   services: [
     {
       id: 'srv-1',
@@ -384,6 +414,21 @@ export const defaultSiteContent: SiteContent = {
       order: 6
     }
   ],
+
+  projectsHeader: {
+    kicker: {
+      ar: '04 — مشاريعنا',
+      en: '04 — Our Portfolio'
+    },
+    heading: {
+      ar: 'مشاريع منفذة تشهد على دقة الإنجاز',
+      en: 'Architectural Landmarks Built to Endure'
+    },
+    description: {
+      ar: 'نماذج حية لمشاريع تم تسليمها بأعلى معايير الجودة والإشراف الهندسي.',
+      en: 'Real-world projects delivered with the highest standards of engineering.'
+    }
+  },
 
   projects: [
     {

@@ -22,24 +22,41 @@ export const PackagesSection: React.FC = () => {
     window.location.href = `https://wa.me/${waNumber}?text=${text}`;
   };
 
+  const kicker = t(
+    content.packagesHeader?.kicker,
+    language === 'ar' ? '03 — باقات البناء' : '03 — Construction Packages'
+  );
+  const heading = t(
+    content.packagesHeader?.heading,
+    language === 'ar' ? 'باقات بناء مصممة لتلائم تطلعاتك بدقة' : 'Engineered Tiers Tailored to Your Ambitions'
+  );
+  const description = t(
+    content.packagesHeader?.description,
+    language === 'ar'
+      ? 'تتيح لك شركة مسمار اختيار الباقة المثالية لمنزلك أو مشروعك، مع إشراف هندسي وضمانات موثقة.'
+      : 'Choose the ideal tier for your villa with certified engineering supervision and transparent BOQs.'
+  );
+
   return (
     <section id="packages" className="py-24 sm:py-32 bg-[#f4efe8] text-[#1e2b34] border-b border-[#ded5c7]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="max-w-3xl mb-18">
-          <div className="text-xs font-mono text-[#b88a58] tracking-widest uppercase mb-3">
-            03 — {language === 'ar' ? 'باقات البناء' : 'Construction Packages'}
-          </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#1e2b34] leading-tight">
-            {language === 'ar'
-              ? 'باقات بناء مصممة لتلائم تطلعاتك بدقة'
-              : 'Engineered Tiers Tailored to Your Ambitions'}
-          </h2>
-          <p className="mt-4 text-sm sm:text-base text-[#556570] font-light leading-relaxed">
-            {language === 'ar'
-              ? 'تتيح لك شركة مسمار اختيار الباقة المثالية لمنزلك أو مشروعك، مع إشراف هندسي وضمانات موثقة.'
-              : 'Choose the ideal tier for your villa with certified engineering supervision and transparent BOQs.'}
-          </p>
+          {kicker && (
+            <div className="text-xs font-mono text-[#b88a58] tracking-widest uppercase mb-3">
+              {kicker}
+            </div>
+          )}
+          {heading && (
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#1e2b34] leading-tight">
+              {heading}
+            </h2>
+          )}
+          {description && (
+            <p className="mt-4 text-sm sm:text-base text-[#556570] font-light leading-relaxed">
+              {description}
+            </p>
+          )}
         </div>
 
         {/* Packages Cards Grid */}

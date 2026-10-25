@@ -15,18 +15,82 @@ import {
   Layers,
   MapPin,
   Calendar,
-  Maximize2
+  Maximize2,
+  FileText,
+  ChevronDown,
+  ChevronUp,
+  CheckCircle2
 } from 'lucide-react';
 import { MediaPickerModal } from '../../common/MediaPickerModal';
 import { ConfirmModal } from '../../common/ConfirmModal';
 
 export const ProjectsManagerTab: React.FC = () => {
-  const { content, saveProject, deleteProject } = useContent();
+  const { content, saveContent, saveProject, deleteProject } = useContent();
   const projects = [...(content.projects || [])].sort((a, b) => a.order - b.order);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingProject, setEditingProject] = useState<ProjectItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Section Header State
+  const defaultProjectsHeader = {
+    kicker: { ar: '04 — مشاريعنا', en: '04 — Our Portfolio' },
+    heading: { ar: 'مشاريع منفذة تشهد على دقة الإنجاز', en: 'Architectural Landmarks Built to Endure' },
+    description: {
+      ar: 'نماذج حية لمشاريع تم تسليمها بأعلى معايير الجودة والإشراف الهندسي.',
+      en: 'Real-world projects delivered with the highest standards of engineering.'
+    }
+  };
+
+  const [headerState, setHeaderState] = useState(() => ({
+    kicker: {
+      ar: content.projectsHeader?.kicker?.ar || defaultProjectsHeader.kicker.ar,
+      en: content.projectsHeader?.kicker?.en || defaultProjectsHeader.kicker.en
+    },
+    heading: {
+      ar: content.projectsHeader?.heading?.ar || defaultProjectsHeader.heading.ar,
+      en: content.projectsHeader?.heading?.en || defaultProjectsHeader.heading.en
+    },
+    description: {
+      ar: content.projectsHeader?.description?.ar || defaultProjectsHeader.description.ar,
+      en: content.projectsHeader?.description?.en || defaultProjectsHeader.description.en
+    }
+  }));
+
+  const [isHeaderSaving, setIsHeaderSaving] = useState(false);
+  const [headerSaveSuccess, setHeaderSaveSuccess] = useState(false);
+  const [isHeaderOpen, setIsHeaderOpen] = useState(false);
+
+  React.useEffect(() => {
+    if (content.projectsHeader) {
+      setHeaderState({
+        kicker: {
+          ar: content.projectsHeader.kicker?.ar || defaultProjectsHeader.kicker.ar,
+          en: content.projectsHeader.kicker?.en || defaultProjectsHeader.kicker.en
+        },
+        heading: {
+          ar: content.projectsHeader.heading?.ar || defaultProjectsHeader.heading.ar,
+          en: content.projectsHeader.heading?.en || defaultProjectsHeader.heading.en
+        },
+        description: {
+          ar: content.projectsHeader.description?.ar || defaultProjectsHeader.description.ar,
+          en: content.projectsHeader.description?.en || defaultProjectsHeader.description.en
+        }
+      });
+    }
+  }, [content.projectsHeader]);
+
+  const handleSaveHeader = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsHeaderSaving(true);
+    await saveContent({
+      ...content,
+      projectsHeader: headerState
+    });
+    setIsHeaderSaving(false);
+    setHeaderSaveSuccess(true);
+    setTimeout(() => setHeaderSaveSuccess(false), 3000);
+  };
 
   // Media picker controls
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -163,6 +227,92 @@ export const ProjectsManagerTab: React.FC = () => {
             <Plus className="w-4 h-4" />
             <span>إضافة مشروع جديد</span>
           </button>
+        )}
+      </div>
+
+      {/* Section Header Editor (Title & Kicker) */}
+      <div className="p-5 sm:p-6 rounded-2xl border border-neutral-800 bg-neutral-900/80 shadow-lg space-y-4">
+        <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
+              <FileText className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <span>عنوان ومقدمة قسم المشاريع (المعروضة أعلى المعرض)</span>
+                {headerSaveSuccess && (
+                  <span className="text-[11px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>تم الحفظ</span>
+                  </span>
+                )}
+              </h3>
+              <p className="text-[11px] text-neutral-400">
+                يمكنك هنا تغيير العنوان الرئيسي وشارة قسم المشاريع في واجهة الموقع.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsHeaderOpen(!isHeaderOpen)}
+            className="p-1.5 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 transition-colors"
+          >
+            {isHeaderOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+        </div>
+
+        {isHeaderOpen && (
+          <form onSubmit={handleSaveHeader} className="space-y-4 pt-1">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  شارة القسم (Kicker) بالعربية
+                </label>
+                <input
+                  type="text"
+                  value={headerState.kicker.ar}
+                  onChange={(e) =>
+                    setHeaderState({
+                      ...headerState,
+                      kicker: { ...headerState.kicker, ar: e.target.value }
+                    })
+                  }
+                  placeholder="04 — مشاريعنا"
+                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-mono"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  العنوان الرئيسي للقسم (Heading) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={headerState.heading.ar}
+                  onChange={(e) =>
+                    setHeaderState({
+                      ...headerState,
+                      heading: { ...headerState.heading, ar: e.target.value }
+                    })
+                  }
+                  placeholder="مشاريع منفذة تشهد على دقة الإنجاز"
+                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-bold"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end pt-1">
+              <button
+                type="submit"
+                disabled={isHeaderSaving}
+                className="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>{isHeaderSaving ? 'جاري الحفظ...' : 'حفظ عنوان ومقدمة المشاريع'}</span>
+              </button>
+            </div>
+          </form>
         )}
       </div>
 

@@ -180,13 +180,22 @@ export interface MethodologyData {
   steps: MethodologyStep[];
 }
 
+export interface SectionHeaderData {
+  kicker: BilingualText;
+  heading: BilingualText;
+  description: BilingualText;
+}
+
 export interface SiteContent {
   settings: SiteSettings;
   about: AboutData;
   methodology: MethodologyData;
   services: ServiceItem[];
+  servicesHeader?: SectionHeaderData;
   packages: ConstructionPackage[];
+  packagesHeader?: SectionHeaderData;
   projects: ProjectItem[];
+  projectsHeader?: SectionHeaderData;
   contact: ContactInfo;
   customSections: CustomSection[];
   mediaLibrary: MediaItem[];

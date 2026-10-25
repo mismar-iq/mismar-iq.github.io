@@ -13,19 +13,83 @@ import {
   ArrowDown,
   Boxes,
   Image as ImageIcon,
-  Star
+  Star,
+  FileText,
+  ChevronDown,
+  ChevronUp,
+  CheckCircle2
 } from 'lucide-react';
 import { MediaPickerModal } from '../../common/MediaPickerModal';
 import { ConfirmModal } from '../../common/ConfirmModal';
 
 export const PackagesManagerTab: React.FC = () => {
-  const { content, savePackage, deletePackage } = useContent();
+  const { content, saveContent, savePackage, deletePackage } = useContent();
   const packages = [...(content.packages || [])].sort((a, b) => a.order - b.order);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingPackage, setEditingPackage] = useState<ConstructionPackage | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+
+  // Section Header State
+  const defaultPackagesHeader = {
+    kicker: { ar: '03 — باقات البناء', en: '03 — Construction Packages' },
+    heading: { ar: 'باقات بناء مصممة لتلائم تطلعاتك بدقة', en: 'Engineered Tiers Tailored to Your Ambitions' },
+    description: {
+      ar: 'تتيح لك شركة مسمار اختيار الباقة المثالية لمنزلك أو مشروعك، مع إشراف هندسي وضمانات موثقة.',
+      en: 'Choose the ideal tier for your villa with certified engineering supervision and transparent BOQs.'
+    }
+  };
+
+  const [headerState, setHeaderState] = useState(() => ({
+    kicker: {
+      ar: content.packagesHeader?.kicker?.ar || defaultPackagesHeader.kicker.ar,
+      en: content.packagesHeader?.kicker?.en || defaultPackagesHeader.kicker.en
+    },
+    heading: {
+      ar: content.packagesHeader?.heading?.ar || defaultPackagesHeader.heading.ar,
+      en: content.packagesHeader?.heading?.en || defaultPackagesHeader.heading.en
+    },
+    description: {
+      ar: content.packagesHeader?.description?.ar || defaultPackagesHeader.description.ar,
+      en: content.packagesHeader?.description?.en || defaultPackagesHeader.description.en
+    }
+  }));
+
+  const [isHeaderSaving, setIsHeaderSaving] = useState(false);
+  const [headerSaveSuccess, setHeaderSaveSuccess] = useState(false);
+  const [isHeaderOpen, setIsHeaderOpen] = useState(false);
+
+  React.useEffect(() => {
+    if (content.packagesHeader) {
+      setHeaderState({
+        kicker: {
+          ar: content.packagesHeader.kicker?.ar || defaultPackagesHeader.kicker.ar,
+          en: content.packagesHeader.kicker?.en || defaultPackagesHeader.kicker.en
+        },
+        heading: {
+          ar: content.packagesHeader.heading?.ar || defaultPackagesHeader.heading.ar,
+          en: content.packagesHeader.heading?.en || defaultPackagesHeader.heading.en
+        },
+        description: {
+          ar: content.packagesHeader.description?.ar || defaultPackagesHeader.description.ar,
+          en: content.packagesHeader.description?.en || defaultPackagesHeader.description.en
+        }
+      });
+    }
+  }, [content.packagesHeader]);
+
+  const handleSaveHeader = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsHeaderSaving(true);
+    await saveContent({
+      ...content,
+      packagesHeader: headerState
+    });
+    setIsHeaderSaving(false);
+    setHeaderSaveSuccess(true);
+    setTimeout(() => setHeaderSaveSuccess(false), 3000);
+  };
 
   // New feature input temp state
   const [newFeatureAr, setNewFeatureAr] = useState('');
@@ -143,6 +207,110 @@ export const PackagesManagerTab: React.FC = () => {
             <Plus className="w-4 h-4" />
             <span>إضافة باقة جديدة</span>
           </button>
+        )}
+      </div>
+
+      {/* Section Header Editor (Title, Subtitle & Kicker) */}
+      <div className="p-5 sm:p-6 rounded-2xl border border-neutral-800 bg-neutral-900/80 shadow-lg space-y-4">
+        <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
+              <FileText className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <span>عنوان ومقدمة قسم باقات البناء (المعروضة أعلى القسم)</span>
+                {headerSaveSuccess && (
+                  <span className="text-[11px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>تم الحفظ</span>
+                  </span>
+                )}
+              </h3>
+              <p className="text-[11px] text-neutral-400">
+                يمكنك هنا تغيير العنوان الرئيسي والوصف الظاهرين أعلى باقات البناء في واجهة الموقع.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsHeaderOpen(!isHeaderOpen)}
+            className="p-1.5 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 transition-colors"
+          >
+            {isHeaderOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+        </div>
+
+        {isHeaderOpen && (
+          <form onSubmit={handleSaveHeader} className="space-y-4 pt-1">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  شارة القسم (Kicker) بالعربية
+                </label>
+                <input
+                  type="text"
+                  value={headerState.kicker.ar}
+                  onChange={(e) =>
+                    setHeaderState({
+                      ...headerState,
+                      kicker: { ...headerState.kicker, ar: e.target.value }
+                    })
+                  }
+                  placeholder="03 — باقات البناء"
+                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-mono"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                  العنوان الرئيسي للقسم (Heading) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={headerState.heading.ar}
+                  onChange={(e) =>
+                    setHeaderState({
+                      ...headerState,
+                      heading: { ...headerState.heading, ar: e.target.value }
+                    })
+                  }
+                  placeholder="باقات بناء مصممة لتلائم تطلعاتك بدقة"
+                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-bold"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-neutral-300 mb-1">
+                الوصف والمقدمة التوضيحية أسفل العنوان
+              </label>
+              <textarea
+                rows={2}
+                value={headerState.description.ar}
+                onChange={(e) =>
+                  setHeaderState({
+                    ...headerState,
+                    description: { ...headerState.description, ar: e.target.value }
+                  })
+                }
+                placeholder="تتيح لك شركة مسمار اختيار الباقة المثالية لمنزلك أو مشروعك، مع إشراف هندسي وضمانات موثقة."
+                className="w-full bg-neutral-950 border border-neutral-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+              />
+            </div>
+
+            <div className="flex items-center justify-end pt-1">
+              <button
+                type="submit"
+                disabled={isHeaderSaving}
+                className="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>{isHeaderSaving ? 'جاري الحفظ...' : 'حفظ عنوان ومقدمة الباقات'}</span>
+              </button>
+            </div>
+          </form>
         )}
       </div>
 
